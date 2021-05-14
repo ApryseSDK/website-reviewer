@@ -14,7 +14,6 @@ import { useEffect, useMemo, useState } from 'react';
 import CollabClientContext from '../context/CollabClient';
 import WebViewerContext, { WebViewerState } from '../context/WebViewer';
 import WebViewerHTMLContext, { WebViewerHTMLState } from '../context/WebViewerHTML';
-import { UserAuth } from '../auth';
 
 function MyApp({ Component, pageProps, user: userProp, token }) {
 
@@ -94,6 +93,11 @@ MyApp.getInitialProps = async (appContext) => {
 
   if (!user && appContext.ctx.req.url !== '/login' && appContext.ctx.req.url !== '/sign-up') {
     appContext.ctx.res.redirect('/login');
+    return;
+  }
+
+  if (appContext.ctx.req.url == '/') {
+    appContext.ctx.res.redirect('/document');
     return;
   }
 

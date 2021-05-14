@@ -6,7 +6,13 @@ import UserContext from "../context/UserContext";
 import useArrayState from "../hooks/useArrayState";
 import NewFileModal from "./NewFileModal";
 
-export default function SideNav() {
+type SideNavProps = {
+  documentId?: string
+}
+
+export default function SideNav({
+  documentId
+}: SideNavProps) {
 
   const { user } = useContext(UserContext);
   const client = useContext(CollabClient);
@@ -18,8 +24,11 @@ export default function SideNav() {
   } = useArrayState<Document>();
 
   useEffect(() => {
-    if (!client) return;
+    
+  }, [documentId])
 
+  useEffect(() => {
+    if (!client) return;
     (async () => {
       const { default: CollabClientClass } = await import('@pdftron/collab-client');
       const documents = await client.getAllDocuments();
@@ -32,8 +41,6 @@ export default function SideNav() {
         }
       })
     })()
-
-
   }, [client])
 
   return (
