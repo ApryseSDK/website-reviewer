@@ -3,6 +3,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import App from 'next/app'
 import UserContext, { AuthUser, UserState } from '../context/UserContext';
 import theme from '../theme';
+import cookie from "cookie"
 
 import type CollabClientType from '@pdftron/collab-client';
 import type WebViewerHTML from '@pdftron/webviewer-html';
@@ -15,12 +16,13 @@ import WebViewerContext, { WebViewerState } from '../context/WebViewer';
 import WebViewerHTMLContext, { WebViewerHTMLState } from '../context/WebViewerHTML';
 import { UserAuth } from '../auth';
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps, user: userProp, token }) {
 
   const [collabClient, setCollabClient] = useState<CollabClientType>()
   const [instance, setInstance] = useState<WebViewerInstance>();
-  const [user, setUser] = useState<AuthUser>(pageProps.user);
+  const [user, setUser] = useState<AuthUser>(userProp);
   const [htmlInstance, setHtmlInstance] = useState<ReturnType<WebViewerHTML>>();
+
 
   useEffect(() => {
     // IIFE for access to async
@@ -30,6 +32,11 @@ function MyApp({ Component, pageProps }) {
         url: process.env.NEXT_PUBLIC_SERVER_URL,
         subscriptionUrl: process.env.NEXT_PUBLIC_SUBSCRIPTION_URL
       });
+      
+      if (token) {
+        await client.loginWithToken(token)
+      }
+
       setCollabClient(client)
     })()
     
@@ -69,13 +76,20 @@ function MyApp({ Component, pageProps }) {
 
 MyApp.getInitialProps = async (appContext) => {
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_AUTH_URL}/session`);
-  let user;
+  let c = {};
+  if (appContext.ctx.req) {
+    c = cookie.parse(appContext.ctx.req.headers.cookie || '');
+  }
 
+  const response = await fetch(`${process.env.NEXT_PUBLIC_AUTH_URL}/session?cookie=${c['wv-collab-token']}`, { credentials: 'include' });
+  let user;
+  let token;
   const appProps = await App.getInitialProps(appContext);
 
   if (response.status === 200) {
-    user = await response.json();
+    const json = await response.json()
+    user = json.user
+    token = json.token;
   }
 
   if (!user && appContext.ctx.req.url !== '/login' && appContext.ctx.req.url !== '/sign-up') {
@@ -83,7 +97,7 @@ MyApp.getInitialProps = async (appContext) => {
     return;
   }
 
-  return { ...appProps, user }
+  return { ...appProps, user, token }
 }
 
 export default MyApp

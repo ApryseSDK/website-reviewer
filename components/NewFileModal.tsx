@@ -1,4 +1,4 @@
-import { useDisclosure } from "@chakra-ui/hooks"
+import { useBoolean, useDisclosure } from "@chakra-ui/hooks"
 import {
   Modal,
   ModalOverlay,
@@ -11,19 +11,61 @@ import {
   Input,
   Text
 } from "@chakra-ui/react"
-import { useRef } from "react"
+import { useContext, useRef } from "react"
+import CollabClient from "../context/CollabClient";
+import WebViewerHTML from "../context/WebViewerHTML";
 
 export default function NewFileModal() {
 
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const [loading, setLoading] = useBoolean();
 
-  const ref = useRef<HTMLInputElement>();
+  const urlRef = useRef<HTMLInputElement>();
+  const nameRef = useRef<HTMLInputElement>();
+  const widthRef = useRef<HTMLInputElement>();
 
-  const submit = () => {
+  const { htmlInstance } = useContext(WebViewerHTML)
+  const client = useContext(CollabClient);
 
-    const value = ref.current.value;
+  const submit = async () => {
 
-    console.log(value)
+    setLoading.on();
+
+    const url = urlRef.current.value;
+    const name = nameRef.current.value;
+    const width = widthRef.current.value;
+
+    const result = await fetch(`${process.env.NEXT_PUBLIC_DOCUMENT_API_BASE_URL}/add`, {
+      method: 'post',
+      body: JSON.stringify({
+        url,
+        width
+      }),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+
+    const {
+      url: finalUrl,
+      height,
+      id
+    } = await result.json();
+
+    htmlInstance.loadHTMLPage({
+      url: finalUrl,
+      width,
+      height
+    })
+
+    await client.createSession({
+      documentId: id,
+      isPublic: true,
+      filename: name
+    })
+
+    setLoading.off();
+    onClose();
   }
 
   return (
@@ -37,8 +79,15 @@ export default function NewFileModal() {
           <ModalBody>
 
             <Text pb='5px'>Enter the URL</Text>
-            <Input ref={ref}/>
-            <Button my='10px' bg='blue.500' color='white' onClick={submit} >Submit</Button>
+            <Input ref={urlRef} />
+            
+            <Text mt='20px' pb='5px'>Enter a name for this document</Text>
+            <Input ref={nameRef} />
+            
+            <Text mt='20px' pb='5px'>Enter a width to view the document at</Text>
+            <Input type='number' min={100} defaultValue='1200' ref={widthRef}/>
+
+            <Button isLoading={loading} my='20px' bg='blue.500' color='white' onClick={submit} >Submit</Button>
           </ModalBody>
 
         </ModalContent>

@@ -5,6 +5,10 @@ import CollabDatabase from '@pdftron/collab-db-postgresql';
 import express, { Request, Response } from "express";
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
+import { v4 } from 'uuid';
+import * as path from 'path';
+import scrape from 'website-scraper';
+import puppeteer from 'puppeteer';
 
 require('dotenv').config()
 const db = new CollabDatabase({
@@ -18,7 +22,10 @@ db.connectDB();
 
 const server = new CollabServer({
   resolvers: db.getResolvers(),
-  getUserFromToken
+  getUserFromToken,
+  corsOption: {
+    origin: 'http://localhost:3000'
+  }
 })
 
 // @ts-ignore
@@ -38,12 +45,60 @@ const handle = app.getRequestHandler();
   server.use(express.json())
   server.use(cookieParser());
 
+  server.post('/review/add', async (req, res) => {
+
+    const id = v4();
+
+    const { url, width } = req.body;
+
+    const directory = path.resolve(
+      __dirname,
+      `./public/documents/${id}`
+    );
+
+    const options = {
+      urls: [url],
+      directory,
+      filenameGenerator: id,
+    };
+
+    await scrape(options);
+
+    const finalURL = `${process.env.DOCUMENT_BASE_URL}/${id}/index.html`
+
+    const browser = await puppeteer.launch({
+      defaultViewport: {
+        width: Number(width),
+        height: 1000
+      },
+    });
+
+    const page = await browser.newPage();
+    await page.goto(finalURL);
+
+    const body = await page.$('body')
+    const bb = await body.boundingBox()
+    const height = await bb.height;
+
+    return res.status(200).send({
+      url: `${process.env.DOCUMENT_BASE_URL}/${id}/index.html`,
+      width,
+      height,
+      id
+    })
+  })
+
   server.get('/auth/session', async (req, res) => {
-    if (!req.cookies) {
-      return res.status(401).send();
+
+    const { cookie } = req.query;
+    let token;
+
+    if (cookie) {
+      token = cookie;
+    } else if(req.cookies) {
+      token = req.cookies['wv-collab-token']
     }
-    
-    const token = req.cookies['wv-collab-token'];
+
     if (!token) {
       return res.status(401).send();
     }
@@ -87,7 +142,10 @@ const handle = app.getRequestHandler();
       email
     }, process.env.COLLAB_KEY);
   
-    res.cookie('wv-collab-token', token);
+    res.cookie('wv-collab-token', token, {
+      httpOnly: true,
+      secure: false
+    });
   
     res.status(200).send({
       user,
@@ -120,7 +178,11 @@ const handle = app.getRequestHandler();
       email
     }, process.env.COLLAB_KEY);
 
-    res.cookie('wv-collab-token', token);
+  
+    res.cookie('wv-collab-token', token, {
+      httpOnly: true,
+      secure: false
+    });
 
     res.status(200).send({
       user,

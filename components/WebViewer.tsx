@@ -29,6 +29,7 @@ export default function WebViewerWrapper() {
 
   useEffect(() => {
     if (client && instance) {
+      // @ts-ignore
       client.setInstance(instance)
     }
   }, [client, instance])
