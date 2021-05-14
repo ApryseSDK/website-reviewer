@@ -3,6 +3,17 @@ import { extendTheme } from "@chakra-ui/react"
 
 // 2. Call `extendTheme` and pass your custom values
 export default extendTheme({
+  styles: {
+    global: {
+      'html, body': {
+        margin: 0,
+        padding: 0
+      },
+      '*': {
+        boxSizing: 'border-box'
+      }
+    }
+  },
   colors: {
     transparent: "transparent",
     pdftron: '#00a5e4',
