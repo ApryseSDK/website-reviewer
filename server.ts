@@ -9,6 +9,7 @@ import { v4 } from 'uuid';
 import * as path from 'path';
 import scrape from 'website-scraper';
 import puppeteer from 'puppeteer';
+import * as fs from 'fs';
 
 require('dotenv').config()
 const db = new CollabDatabase({
@@ -45,6 +46,29 @@ const handle = app.getRequestHandler();
   server.use(express.json())
   server.use(cookieParser());
 
+  server.get('/review/metadata', async (req, res) => {
+    try {
+      const id = req.query.id;
+
+      const metaPath = path.resolve(
+        __dirname,
+        `./public/documents/${id}/metadata.json`
+      );
+  
+  
+      const fileData = fs.readFileSync(metaPath) + '';
+      const {width, height} = JSON.parse(fileData as string);
+  
+      return res.status(200).send({
+        width,
+        height,
+        url: `${process.env.DOCUMENT_BASE_URL}/${id}/index.html`
+      })
+    } catch (e) {
+      return res.status(500).send();
+    }
+  })
+
   server.post('/review/add', async (req, res) => {
 
     const id = v4();
@@ -66,6 +90,8 @@ const handle = app.getRequestHandler();
 
     const finalURL = `${process.env.DOCUMENT_BASE_URL}/${id}/index.html`
 
+
+
     const browser = await puppeteer.launch({
       defaultViewport: {
         width: Number(width),
@@ -79,6 +105,14 @@ const handle = app.getRequestHandler();
     const body = await page.$('body')
     const bb = await body.boundingBox()
     const height = await bb.height;
+
+    fs.writeFileSync(
+      path.join(directory, './metadata.json'),
+      JSON.stringify({
+        width,
+        height
+      })
+    )
 
     return res.status(200).send({
       url: `${process.env.DOCUMENT_BASE_URL}/${id}/index.html`,

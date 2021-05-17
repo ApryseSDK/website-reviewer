@@ -91,15 +91,22 @@ MyApp.getInitialProps = async (appContext) => {
     token = json.token;
   }
 
-  if (!user && appContext.ctx.req.url !== '/login' && appContext.ctx.req.url !== '/sign-up') {
-    appContext.ctx.res.redirect('/login');
-    return;
+  // Server side
+  if (appContext.ctx.req) {
+    if (!user && appContext.ctx.req.url !== '/login' && appContext.ctx.req.url !== '/sign-up') {
+      appContext.ctx.res.redirect('/login');
+      return;
+    }
+  
+    if (appContext.ctx.req.url == '/') {
+      appContext.ctx.res.redirect('/document');
+      return;
+    }
+  } else {
+
   }
 
-  if (appContext.ctx.req.url == '/') {
-    appContext.ctx.res.redirect('/document');
-    return;
-  }
+
 
   return { ...appProps, user, token }
 }

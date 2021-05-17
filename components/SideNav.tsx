@@ -1,5 +1,6 @@
 import { Box, Flex, Spacer, Text } from "@chakra-ui/layout";
 import { Document } from "@pdftron/collab-client/types/types/resolvers-types";
+import { useRouter } from "next/dist/client/router";
 import { useContext, useEffect } from "react";
 import CollabClient from "../context/CollabClient";
 import UserContext from "../context/UserContext";
@@ -16,6 +17,7 @@ export default function SideNav({
 
   const { user } = useContext(UserContext);
   const client = useContext(CollabClient);
+  const router = useRouter();
 
   const {
     items: documents,
@@ -50,7 +52,12 @@ export default function SideNav({
         {
           documents.map(document => {
             return (
-              <Box key={document.id} p='10px' cursor='pointer'>
+              <Box
+                key={document.id}
+                p='10px'
+                cursor='pointer'
+                onClick={() => router.push(`/document/${document.id}`)}
+              >
                 <Text color='white'>{document.name}</Text>
               </Box>
             )
