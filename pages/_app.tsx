@@ -6,26 +6,31 @@ import theme from '../theme';
 import cookie from "cookie"
 
 import type CollabClientType from '@pdftron/collab-client';
-import type WebViewerHTML from '@pdftron/webviewer-html';
 import type { WebViewerInstance } from '@pdftron/webviewer';
 
 import { useEffect, useMemo, useState } from 'react';
 
 import CollabClientContext from '../context/CollabClient';
 import WebViewerContext, { WebViewerState } from '../context/WebViewer';
-import WebViewerHTMLContext, { WebViewerHTMLState } from '../context/WebViewerHTML';
+import WebViewerHTMLContext from '../context/WebViewerHTML';
+import { WebViewerHTMLInstance } from '@pdftron/webviewer-html/types/html';
 
 function MyApp({ Component, pageProps, user: userProp, token }) {
 
   const [collabClient, setCollabClient] = useState<CollabClientType>()
   const [instance, setInstance] = useState<WebViewerInstance>();
   const [user, setUser] = useState<AuthUser>(userProp);
-  const [htmlInstance, setHtmlInstance] = useState<ReturnType<WebViewerHTML>>();
+  const [htmlInstance, setHTMLInstance] = useState<WebViewerHTMLInstance>();
 
 
   useEffect(() => {
     // IIFE for access to async
     (async () => {
+
+      const { initializeHTMLViewer } = await import('@pdftron/webviewer-html')
+      const htmlInstance = await initializeHTMLViewer();
+      setHTMLInstance(htmlInstance)
+
       const { default: CollabClient } = await import('@pdftron/collab-client')
       const client = new CollabClient({
         url: process.env.NEXT_PUBLIC_SERVER_URL,
@@ -35,21 +40,21 @@ function MyApp({ Component, pageProps, user: userProp, token }) {
       if (token) {
         await client.loginWithToken(token)
       }
-
       setCollabClient(client)
     })()
     
   }, [])
 
+  useEffect(() => {
+    if (htmlInstance && instance) {
+      htmlInstance.setInstance(instance)
+    }
+  }, [htmlInstance, instance])
+
   const webviewerInstanceState = useMemo<WebViewerState>(() => ({
     instance,
     setInstance
-  }), [instance])
-
-  const webviewerHtmlState = useMemo<WebViewerHTMLState>(() => ({
-    htmlInstance,
-    setHtmlInstance
-  }), [htmlInstance])
+  }), [instance, htmlInstance])
 
   const userState = useMemo<UserState>(() => ({
     user,
@@ -58,7 +63,7 @@ function MyApp({ Component, pageProps, user: userProp, token }) {
 
   return (
     <ChakraProvider theme={theme}>
-      <WebViewerHTMLContext.Provider value={webviewerHtmlState}>
+      <WebViewerHTMLContext.Provider value={htmlInstance}>
         <WebViewerContext.Provider value={webviewerInstanceState}>
           <CollabClientContext.Provider value={collabClient}>
             <UserContext.Provider value={userState}>

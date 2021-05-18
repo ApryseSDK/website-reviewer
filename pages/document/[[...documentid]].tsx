@@ -12,7 +12,7 @@ export default function Home() {
   const router = useRouter()
   const { documentid: documentId } = router.query;
   const client = useContext(CollabClient)
-  const { htmlInstance } = useContext(WebViewerHTML);
+  const htmlInstance = useContext(WebViewerHTML);
   const {instance} = useContext(WebViewerContext)
 
   useEffect(() => {

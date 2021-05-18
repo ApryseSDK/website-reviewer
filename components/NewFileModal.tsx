@@ -24,7 +24,7 @@ export default function NewFileModal() {
   const nameRef = useRef<HTMLInputElement>();
   const widthRef = useRef<HTMLInputElement>();
 
-  const { htmlInstance } = useContext(WebViewerHTML)
+  const htmlInstance = useContext(WebViewerHTML)
   const client = useContext(CollabClient);
 
   const submit = async () => {
@@ -54,7 +54,7 @@ export default function NewFileModal() {
 
     htmlInstance.loadHTMLPage({
       url: finalUrl,
-      width,
+      width: Number(width),
       height
     })
 

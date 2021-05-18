@@ -9,7 +9,7 @@ export default function WebViewerWrapper() {
   const ref = useRef();
   const client = useContext(CollabClient);
   const { setInstance, instance } = useContext(WebViewerContext);
-  const { setHtmlInstance } = useContext(WebviewerHTMLContext);
+  const htmlInstance = useContext(WebviewerHTMLContext);
 
   useEffect(() => {
     // IIFE for access to async
@@ -17,13 +17,10 @@ export default function WebViewerWrapper() {
 
       // These need to be dynamically imported, since they rely on "window" which does not exist on the server
       const { default: WebViewer } = await import('@pdftron/webviewer');
-      const { initializeHTMLViewer } = await import('@pdftron/webviewer-html')
       const instance = await WebViewer({
         path: '/webviewer'
       }, ref.current)
       setInstance(instance)
-      const htmlInstance = await initializeHTMLViewer(instance);
-      setHtmlInstance(htmlInstance);
     })()
   }, [])
 
