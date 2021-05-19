@@ -27,9 +27,12 @@ export default function Home() {
           width, height, url
         } = json;
 
-        instance.docViewer.one('annotationsLoaded', () => {
+        instance.docViewer.one('annotationsLoaded', async () => {
           instance.docViewer.zoomTo(1)
-          client.loadSession(documentId[0] as string)
+          const doc = await client.loadSession(documentId[0] as string)
+          if (doc.isPublic) {
+            await client.joinDocument(doc.id);
+          }
         })
 
         htmlInstance.loadHTMLPage({
