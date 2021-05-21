@@ -58,8 +58,7 @@ export default function NewFileModal() {
       height
     })
 
-    await client.createSession({
-      documentId: id,
+    await client.loadSession(id, {
       isPublic: true,
       filename: name
     })
