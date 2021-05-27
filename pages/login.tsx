@@ -19,6 +19,8 @@ export default function Login ()  {
 
   const { setUser } = useContext(UserContext);
 
+  const next = router.query?.next;
+
   const login = useCallback(async () => {
 
     setLoading.on();
@@ -47,7 +49,7 @@ export default function Login ()  {
 
     setUser(result.user);
     await client.loginWithToken(result.token);
-    router.push('/');
+    router.push(next ? next as string : '/');
   }, [client])
 
 

@@ -105,8 +105,8 @@ MyApp.getInitialProps = async (appContext) => {
 
   // Server side
   if (appContext.ctx.req) {
-    if (!user && appContext.ctx.req.url !== '/login' && appContext.ctx.req.url !== '/sign-up') {
-      appContext.ctx.res.redirect('/login');
+    if (!user && appContext.ctx.req._parsedUrl.pathname !== '/login' && appContext.ctx.req._parsedUrl.pathname !== '/sign-up') {
+      appContext.ctx.res.redirect(`/login?next=${appContext.ctx.req.originalUrl}`);
       return;
     }
   

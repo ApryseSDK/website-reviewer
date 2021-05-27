@@ -20,7 +20,7 @@ export default function Home() {
   const [document, setDocument] = useState<Document>(null);
 
   useEffect(() => {
-    if (client && documentId && htmlInstance) {
+    if (client && documentId && htmlInstance && instance) {
 
       // access to async
       (async () => {
@@ -49,7 +49,7 @@ export default function Home() {
       })()
     }
    
-  }, [documentId, client, htmlInstance])
+  }, [documentId, client, htmlInstance, instance])
 
   return (
     <Box w='100vw' h='100vh'>
