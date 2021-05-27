@@ -78,6 +78,13 @@ function MyApp({ Component, pageProps, user: userProp, token }) {
   )
 }
 
+/**
+ * NOTE
+ * 
+ * This is not a proper way of doing authentication.
+ * 
+ * This code is simplified for demo purposes and should not be used in a production environment.
+ */
 MyApp.getInitialProps = async (appContext) => {
 
   let c = {};

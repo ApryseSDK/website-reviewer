@@ -100,11 +100,20 @@ const handle = app.getRequestHandler();
     });
 
     const page = await browser.newPage();
-    await page.goto(finalURL);
+    await page.goto(finalURL, {
+      waitUntil: 'networkidle0',
+    });
 
     const body = await page.$('body')
     const bb = await body.boundingBox()
-    const height = await bb.height;
+
+    const h1 = await bb.height;
+    const h2 = await page.evaluate(() => document.body.scrollHeight);
+    const h3 = await page.evaluate(() => document.documentElement.offsetHeight);
+
+    // Finding the height of a webpage is tricky
+    // This is a combo of multiple different approaches
+    const height = Math.max(h1, h2, h3)
 
     fs.writeFileSync(
       path.join(directory, './metadata.json'),
