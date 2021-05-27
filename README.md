@@ -1,4 +1,6 @@
-# Website Reviewer
+# PDFTron Website Reviewer
+
+![](https://www.pdftron.com/assets/blog/Announcing-WebViewer-Collaboration.png)
 
 This is a runnable and deployable sample project created using [WebViewer](https://www.npmjs.com/package/@pdftron/webviewer), [WebViewer HTML](https://www.npmjs.com/package/@pdftron/webviewer-html) and [WebViewer Collaboration](https://collaboration.pdftron.com/).
 
