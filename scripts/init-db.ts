@@ -1,5 +1,10 @@
 import util from 'util';
-import 'dotenv/config';
+import { config } from 'dotenv';
+import * as path from 'path';
+
+config({
+  path: path.resolve(__dirname, '../.env.local')
+})
 
 const exec = util.promisify(require('child_process').exec);
 
