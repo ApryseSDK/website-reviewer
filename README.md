@@ -53,3 +53,15 @@ yarn dev
 ```
 
 All servers will be started, and you can access the UI at `localhost:3000`.
+
+## Technology used
+
+- [WebViewer](https://www.npmjs.com/package/@pdftron/webviewer) Used to render documents and annotate on them
+- [WebViewer HTML](https://www.npmjs.com/package/@pdftron/webviewer-html) Used to load HTML documents inside of WebViewer
+- [WebViewer Collaboration](https://collaboration.pdftron.com/) Handles all collaboration related functionality
+
+- [NextJS](https://nextjs.org/) Next JS is our React framework used to handle routing and SSR.
+- [ChakraUI](https://chakra-ui.com/) Chakra UI is used for theming and styles
+- [Puppeteer](https://developers.google.com/web/tools/puppeteer) Puppeteer is used as a utility to the the height of a web page
+- [Express](https://expressjs.com/) Express is used to set up a simple REST API for getting metadata about documents
+- [website-scraper](https://www.npmjs.com/package/website-scraper) This package is used to create the "snapshots" of the websites.
