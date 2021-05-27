@@ -30,7 +30,7 @@ export default function Home() {
         instance.docViewer.one('annotationsLoaded', async () => {
           instance.docViewer.zoomTo(1)
           const doc = await client.loadSession(documentId[0] as string)
-          if (doc.isPublic) {
+          if (doc && doc.isPublic) {
             await client.joinDocument(doc.id);
           }
         })
@@ -49,7 +49,7 @@ export default function Home() {
     <Box w='100vw' h='100vh'>
       <Flex h='100%'>
         <Box w='200px'>
-          <SideNav documentId={documentId as string} />
+          <SideNav documentId={documentId?.[0] as string} />
         </Box>
         <Box flexGrow={1} h='100%'>
           <WebViewer />

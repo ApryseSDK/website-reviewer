@@ -28,7 +28,7 @@ export const getHash = (plainTextPassword: string): Promise<string> => {
   });
  };
 
- export const getUserFromToken = async (token: string): Promise<UserAuth> => {
+export const getUserFromToken = async (token: string): Promise<UserAuth> => {
   if (token) {
     return new Promise((resolve) => {
       jwt.verify(token, process.env.COLLAB_KEY, function (err, decoded) {

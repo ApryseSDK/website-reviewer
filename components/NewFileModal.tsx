@@ -4,7 +4,6 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
   Button,
@@ -14,11 +13,13 @@ import {
 import { useContext, useRef } from "react"
 import CollabClient from "../context/CollabClient";
 import WebViewerHTML from "../context/WebViewerHTML";
+import dayjs from 'dayjs';
 
 export default function NewFileModal() {
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [loading, setLoading] = useBoolean();
+
 
   const urlRef = useRef<HTMLInputElement>();
   const nameRef = useRef<HTMLInputElement>();
@@ -67,6 +68,27 @@ export default function NewFileModal() {
     onClose();
   }
 
+
+  const urlBlurred = (value) => {
+    const nameValue = nameRef.current.value;
+    if (nameValue !== '') {
+      return;
+    }
+
+    try {
+      const url = new URL(value);
+      const host = url.host.replace('www.', '');
+  
+      const date = dayjs().format('MMM D, YYYY h:mmA')
+  
+      const newName = `${host} - ${date}`;
+      nameRef.current.value = newName;
+    } catch (e) {
+      // probably invalid URL - OK
+    }
+
+  }
+
   return (
     <>
       <Button onClick={onOpen} bg='yellow' color='blue.900'>New file</Button>
@@ -78,7 +100,7 @@ export default function NewFileModal() {
           <ModalBody>
 
             <Text pb='5px'>Enter the URL</Text>
-            <Input ref={urlRef} />
+            <Input ref={urlRef} onBlur={(e) => urlBlurred(e.target.value)}/>
             
             <Text mt='20px' pb='5px'>Enter a name for this document</Text>
             <Input ref={nameRef} />

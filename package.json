@@ -22,6 +22,7 @@
     "bcrypt": "^5.0.1",
     "cookie": "^0.4.1",
     "cookie-parser": "^1.4.5",
+    "dayjs": "^1.10.5",
     "dotenv": "^9.0.2",
     "express": "^4.17.1",
     "framer-motion": "^4",

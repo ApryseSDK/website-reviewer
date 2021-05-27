@@ -22,12 +22,10 @@ export default function SideNav({
   const {
     items: documents,
     push: pushDocument,
-    setItems: setDocuments
+    setItems: setDocuments,
+    replaceItem: replaceDocument,
+    sort: sortDocuments
   } = useArrayState<Document>();
-
-  useEffect(() => {
-    
-  }, [documentId])
 
   useEffect(() => {
     if (!client) return;
@@ -38,9 +36,19 @@ export default function SideNav({
 
 
       client.subscribe('documentChanged', (document, action) => {
-        if (action === CollabClientClass.ChangeEventTypes.ADD) {
+        if (action === CollabClientClass.ChangeEventTypes.ADD || action === CollabClientClass.ChangeEventTypes.INVITE) {
           pushDocument(document as Document)
         }
+
+        if (action ===  CollabClientClass.ChangeEventTypes.EDIT) {
+          replaceDocument((d) => {
+            return d.id === document.id
+          }, document as Document)
+        }
+
+        sortDocuments((d1, d2) => {
+          return d2.updatedAt > d1.updatedAt ? 1 : -1
+        })
       })
     })()
   }, [client])
@@ -51,15 +59,27 @@ export default function SideNav({
       <Box>
         {
           documents.map(document => {
+
+            const active = document.id === documentId;
             return (
-              <Box
+              <Flex
                 key={document.id}
-                p='10px'
-                cursor='pointer'
-                onClick={() => router.push(`/document/${document.id}`)}
+                p='5px 10px'
+                mb='5px'
+                cursor={active ? undefined : 'pointer'}
+                onClick={active ? undefined : () => router.push(`/document/${document.id}`)}
+                bg={active ? 'white' : 'transparent'}
+                borderRadius='4px'
               >
-                <Text color='white'>{document.name}</Text>
-              </Box>
+                <Text color={active ? 'blue.900' : 'white'}>{document.name}</Text>
+                <Spacer />
+                {
+                  document.unreadCount > 0 &&
+                  <Box bg='red' px='10px' borderRadius='10px'>
+                    <Text color='white' fontWeight='bold'>{document.unreadCount}</Text>
+                  </Box>
+                }
+              </Flex>
             )
           })
         }
