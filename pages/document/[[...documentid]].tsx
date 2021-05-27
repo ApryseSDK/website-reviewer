@@ -1,19 +1,23 @@
-import { Box, Flex, ChakraProvider } from '@chakra-ui/react';
+import { Box, Flex, ChakraProvider, HStack, VStack } from '@chakra-ui/react';
 import WebViewer from '../../components/WebViewer';
 
 import SideNav from '../../components/SideNav';
 import { useRouter } from 'next/dist/client/router';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import CollabClient from '../../context/CollabClient';
 import WebViewerHTML from '../../context/WebViewerHTML';
 import WebViewerContext from '../../context/WebViewer';
+import { Document } from '@pdftron/collab-server/types/types/resolvers-types';
+import TopNav from '../../components/TopNav';
 
 export default function Home() {
   const router = useRouter()
   const { documentid: documentId } = router.query;
   const client = useContext(CollabClient)
   const htmlInstance = useContext(WebViewerHTML);
-  const {instance} = useContext(WebViewerContext)
+  const { instance } = useContext(WebViewerContext)
+  
+  const [document, setDocument] = useState<Document>(null);
 
   useEffect(() => {
     if (client && documentId && htmlInstance) {
@@ -33,6 +37,8 @@ export default function Home() {
           if (doc && doc.isPublic) {
             await client.joinDocument(doc.id);
           }
+
+          (doc && setDocument(doc as Document));
         })
 
         htmlInstance.loadHTMLPage({
@@ -51,9 +57,12 @@ export default function Home() {
         <Box w='200px'>
           <SideNav documentId={documentId?.[0] as string} />
         </Box>
-        <Box flexGrow={1} h='100%'>
-          <WebViewer />
-        </Box>
+        <VStack flexGrow={1} h='100%'>
+          <TopNav document={document} />
+          <Box flexGrow={1} w='100%'>
+            <WebViewer />
+          </Box>
+        </VStack>
       </Flex>
     </Box>
   )

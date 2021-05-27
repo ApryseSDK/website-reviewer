@@ -6,6 +6,7 @@ import CollabClient from "../context/CollabClient";
 import UserContext from "../context/UserContext";
 import useArrayState from "../hooks/useArrayState";
 import NewFileModal from "./NewFileModal";
+import ShareModal from "./ShareModal";
 
 type SideNavProps = {
   documentId?: string
@@ -87,6 +88,11 @@ export default function SideNav({
 
       <Spacer />
       
+      {
+        documentId && <ShareModal />
+      }
+      
+
       <NewFileModal />
 
       <Text
