@@ -9,7 +9,9 @@ config({
 const exec = util.promisify(require('child_process').exec);
 
 (async () => {
-  
-  await exec(`cd node_modules/@pdftron/collab-db-postgresql && yarn start-local-db --password=${process.env.DB_PASSWORD}`)
+
+  const { stdout, stderr } =  await exec(`cd node_modules/@pdftron/collab-db-postgresql && yarn start-local-db --noMount --name=pg-reviewer --password=${process.env.DB_PASSWORD}`);
+  console.log('stdout:', stdout);
+  console.log('stderr:', stderr);
 
 })()

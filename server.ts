@@ -11,7 +11,9 @@ import scrape from 'website-scraper';
 import puppeteer from 'puppeteer';
 import * as fs from 'fs';
 
-require('dotenv').config()
+require('dotenv').config({
+  path: '.env.local'
+})
 const db = new CollabDatabase({
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
