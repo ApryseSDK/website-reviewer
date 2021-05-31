@@ -14,6 +14,8 @@ import { useContext, useRef } from "react"
 import CollabClient from "../context/CollabClient";
 import WebViewerHTML from "../context/WebViewerHTML";
 import dayjs from 'dayjs';
+import { useRouter } from "next/dist/client/router";
+import WebViewer from "../context/WebViewer";
 
 export default function NewFileModal() {
 
@@ -24,9 +26,11 @@ export default function NewFileModal() {
   const urlRef = useRef<HTMLInputElement>();
   const nameRef = useRef<HTMLInputElement>();
   const widthRef = useRef<HTMLInputElement>();
+  const router = useRouter();
 
   const htmlInstance = useContext(WebViewerHTML)
   const client = useContext(CollabClient);
+  const instance = useContext(WebViewer);
 
   const submit = async () => {
 
@@ -53,19 +57,23 @@ export default function NewFileModal() {
       id
     } = await result.json();
 
+    instance.instance.docViewer.one('documentLoaded', async () => {
+      await client.loadSession(id, {
+        isPublic: true,
+        filename: name
+      })
+
+      router.push(`/document/${id}`)
+
+      setLoading.off();
+      onClose();
+    })
+
     htmlInstance.loadHTMLPage({
       url: finalUrl,
       width: Number(width),
       height
     })
-
-    await client.loadSession(id, {
-      isPublic: true,
-      filename: name
-    })
-
-    setLoading.off();
-    onClose();
   }
 
 
