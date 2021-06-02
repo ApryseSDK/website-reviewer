@@ -26,6 +26,7 @@ db.connectDB();
 const server = new CollabServer({
   resolvers: db.getResolvers(),
   getUserFromToken,
+  logLevel: CollabServer.LogLevels.DEBUG,
   corsOption: {
     origin: 'http://localhost:3000'
   }

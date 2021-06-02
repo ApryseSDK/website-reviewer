@@ -20,6 +20,18 @@ export default function Home() {
   const [document, setDocument] = useState<Document>(null);
 
   useEffect(() => {
+    if (client) {
+      console.log('subscribed')
+      return client.subscribe('documentChanged', (doc) => {
+        console.log('doc changed', doc)
+        if (doc.id === document.id) {
+          setDocument(doc as Document)
+        }
+      })
+    }
+  }, [client, document])
+
+  useEffect(() => {
     if (client && documentId && htmlInstance && instance) {
 
       // access to async

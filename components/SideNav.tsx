@@ -36,7 +36,10 @@ export default function SideNav({
       setDocuments(documents as Document[])
 
 
-      client.subscribe('documentChanged', (document, action) => {
+      return client.subscribe('documentChanged', (document, action) => {
+
+        console.log('doc changed')
+
         if (action === CollabClientClass.ChangeEventTypes.ADD || action === CollabClientClass.ChangeEventTypes.INVITE) {
           pushDocument(document as Document)
         }
