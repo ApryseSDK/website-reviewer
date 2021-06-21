@@ -901,10 +901,12 @@
     pg "^8.3.0"
     ts-node "^9.0.0"
 
-"@pdftron/webviewer-html@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@pdftron/webviewer-html/-/webviewer-html-3.0.1.tgz#adfa3f9201fc4c0d50cf6dbb50ee28bf66ac8d90"
-  integrity sha512-yTPbaDDhSxF208RwzJy33PysvUM63L83TEldmE+1tMZ7VixX8W/Vu1CsBDQn84KubFxcYFohmWTCZ879CzrWpA==
+"@pdftron/webviewer-html@^3.0.4":
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/@pdftron/webviewer-html/-/webviewer-html-3.0.4.tgz#c62f5cdb186d87bf543e099b3c868cdef6d26b2f"
+  integrity sha512-o7I8B0C8Hu4pH71A7+DTYQvsqNh3W5Oc55KPuKiMfgrfepzdZ97JDrmNkAsobsh8UEDZC8w2pZkGwtoypXOEVQ==
+  dependencies:
+    typescript "^4.2.4"
 
 "@pdftron/webviewer@^7.3.2":
   version "7.3.2"

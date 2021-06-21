@@ -18,7 +18,7 @@
     "@pdftron/collab-db-postgresql": "2.0.0-alpha.2",
     "@pdftron/collab-server": "2.0.0-alpha.2",
     "@pdftron/webviewer": "^7.3.2",
-    "@pdftron/webviewer-html": "^3.0.1",
+    "@pdftron/webviewer-html": "^3.0.4",
     "bcrypt": "^5.0.1",
     "cookie": "^0.4.1",
     "cookie-parser": "^1.4.5",
